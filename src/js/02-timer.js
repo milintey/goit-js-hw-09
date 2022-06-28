@@ -47,6 +47,13 @@ const timer = {
 
 function dateTimer() {
     const deltaTime = turgetDate - Date.now();
+
+    if (deltaTime < 0 ) {
+        clearInterval(timer.intervalId);
+        return;
+    }
+
+    console.log(deltaTime);
     const time = convertMs(deltaTime);
     updateClock(time);
     console.log(time);
