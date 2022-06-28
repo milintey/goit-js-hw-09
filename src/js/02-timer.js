@@ -1,5 +1,6 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import Notiflix from 'notiflix';
 
 const startBtn = document.querySelector('[data-start]');
 const daysForTimer = document.querySelector('[data-days]');
@@ -15,18 +16,18 @@ startBtn.disabled = true;
 let turgetDate = 0;
 
 const options = {
-  enableTime: true,
-  time_24hr: true,
-  defaultDate: new Date(),
-  minuteIncrement: 1,
+    enableTime: true,
+    time_24hr: true,
+    defaultDate: new Date(),
+    minuteIncrement: 1,
     onClose(selectedDates) {
         if (selectedDates[0] < options.defaultDate) {
-            return window.alert("Please choose a date in the future");
+            return Notiflix.Notify.failure("Please choose a date in the future");
         }
-        
+
         turgetDate = selectedDates[0];
-        startBtn.removeAttribute('disabled');
-  },
+        startBtn.disabled = false;
+    },
 };
 
 flatpickr('#datetime-picker', options);
@@ -42,35 +43,36 @@ const timer = {
         this.isActive = true;
 
         this.intervalId = setInterval(dateTimer, 1000);
+        startBtn.disabled = true;
     }
 }
 
 function dateTimer() {
     const deltaTime = turgetDate - Date.now();
 
-    if (deltaTime < 0 ) {
+    if (deltaTime < 0) {
         clearInterval(timer.intervalId);
+        startBtn.disabled = false;
         return;
     }
 
-    console.log(deltaTime);
     const time = convertMs(deltaTime);
     updateClock(time);
     console.log(time);
 }
 
 function convertMs(ms) {
-  const second = 1000;
-  const minute = second * 60;
-  const hour = minute * 60;
-  const day = hour * 24;
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
 
-  const days = addLeadingZero(Math.floor(ms / day));
-  const hours = addLeadingZero(Math.floor((ms % day) / hour));
-  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
-  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
+    const days = addLeadingZero(Math.floor(ms / day));
+    const hours = addLeadingZero(Math.floor((ms % day) / hour));
+    const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+    const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
 
-  return { days, hours, minutes, seconds };
+    return { days, hours, minutes, seconds };
 }
 
 function updateClock(delta) {
@@ -82,6 +84,6 @@ function updateClock(delta) {
 
 
 function addLeadingZero(value) {
-        return String(value).padStart(2, '0');
+    return String(value).padStart(2, '0');
 }
 
